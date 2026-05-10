@@ -30,6 +30,13 @@ class VendingSlot {
       motor.runToNewPosition(tinta); // roatie completa pentru eliberare produs
       digitalWrite(enablePin, HIGH); // dezactivam la finalul executiei
     }
+
+    void resetarePozitie() {
+      digitalWrite(enablePin, LOW);
+      delay(50);
+      motor.runToNewPosition(0); // revina la pozitia initiala
+      digitalWrite(enablePin, HIGH);
+    }
 };
 
 // maparea pinii motoarelor
@@ -172,12 +179,18 @@ void eliberareProdus() {
   lcd.setCursor(0, 1);
   lcd.print("Va multumim!"); 
   
-  // actionarea motorului corespunzator slotului
-  if (indexSelectat != -1) {
+  if (indexSelectat >= 0 && indexSelectat < 4) {
     slots[indexSelectat].dispense(); 
     stoc[indexSelectat]--; 
+
+    if (stoc[indexSelectat] == 0) {
+      delay(1000);
+      lcd.clear();
+      lcd.print("Resetare slot...");
+      slots[indexSelectat].resetarePozitie(); // resetare pozitie mecanism de eliberare
+    }
   }
 
-  delay(2000); 
+  delay(2000);
   meniuPrincipal(); 
 }
